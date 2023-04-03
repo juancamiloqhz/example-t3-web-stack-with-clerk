@@ -5,7 +5,7 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const { data } = api.plans.getAll.useQuery();
 
   const user = useUser();
   return (
@@ -21,6 +21,11 @@ const Home: NextPage = () => {
             Welcome to Fitness AI!
           </h1>
           {!user.isSignedIn ? <SignInButton /> : <SignOutButton />}
+          {data?.map((item) => (
+            <div key={item.id} className="whitespace-pre-line">
+              {item.content}
+            </div>
+          ))}
         </div>
       </main>
     </>

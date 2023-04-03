@@ -11,8 +11,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Example {
+// This is the Fitness Plan model for each user
+model Plan {
     id        String   @id @default(cuid())
+    content   String   @db.LongText
+    authorId  String
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([authorId])
 }
