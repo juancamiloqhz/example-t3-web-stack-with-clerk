@@ -1,15 +1,13 @@
-import { SignInButton, SignOutButton, useUser } from "@clerk/clerk-react";
+import React from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
-
+import { SignInButton, SignOutButton, useUser } from "@clerk/clerk-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import LoadingSpinner from "~/components/loading-spinner";
+import { api, type RouterOutputs } from "~/utils/api";
 
 dayjs.extend(relativeTime);
-
-import { type RouterOutputs, api } from "~/utils/api";
-import LoadingSpinner from "~/components/loading-spinner";
-import React from "react";
 
 const CreatePlanWizard = () => {
   const [content, setContent] = React.useState("");
