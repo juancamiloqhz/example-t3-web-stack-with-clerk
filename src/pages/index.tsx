@@ -9,6 +9,40 @@ dayjs.extend(relativeTime);
 
 import { type RouterOutputs, api } from "~/utils/api";
 import LoadingSpinner from "~/components/loading-spinner";
+import React from "react";
+
+const CreatePlanWizard = () => {
+  const [content, setContent] = React.useState("");
+
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: creating } = api.plans.create.useMutation({
+    onSuccess: () => {
+      setContent("");
+      void ctx.plans.getAll.invalidate();
+    },
+  });
+  function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    mutate({ content });
+  }
+  return (
+    <form onSubmit={handleCreate} className="flex flex-col">
+      <label htmlFor="content">Content</label>
+      <textarea
+        name="content"
+        id="content"
+        placeholder="Content"
+        required
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        disabled={creating}
+      />
+
+      <button type="submit">Create Plan</button>
+    </form>
+  );
+};
 
 type PlanWithAuthor = RouterOutputs["plans"]["getAll"][number];
 
@@ -45,9 +79,12 @@ const Home: NextPage = () => {
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <h1 className="text-4xl font-bold">Fitness AI!</h1>
           {!isSignedIn ? <SignInButton /> : <SignOutButton />}
-          {data?.map((fullPlan) => (
-            <PlanView {...fullPlan} key={fullPlan.plan.id} />
-          ))}
+          {isSignedIn && <CreatePlanWizard />}
+          <div className="flex flex-col space-y-4">
+            {data?.map((fullPlan) => (
+              <PlanView {...fullPlan} key={fullPlan.plan.id} />
+            ))}
+          </div>
         </div>
       </main>
     </>
