@@ -4,6 +4,7 @@ import Head from "next/head";
 import { SignInButton, SignOutButton, useUser } from "@clerk/clerk-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { toast } from "react-hot-toast";
 import LoadingSpinner from "~/components/loading-spinner";
 import { api, type RouterOutputs } from "~/utils/api";
 
@@ -14,10 +15,18 @@ const CreatePlanWizard = () => {
 
   const ctx = api.useContext();
 
-  const { mutate, isLoading: creating } = api.plans.create.useMutation({
+  const { mutate, isLoading: isCreating } = api.plans.create.useMutation({
     onSuccess: () => {
       setContent("");
       void ctx.plans.getAll.invalidate();
+    },
+    onError: (err) => {
+      const errorMessage = err?.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Failed to create plan! Please try again later.");
+      }
     },
   });
   function handleCreate(e: React.FormEvent) {
@@ -34,10 +43,12 @@ const CreatePlanWizard = () => {
         required
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        disabled={creating}
+        disabled={isCreating}
       />
 
-      <button type="submit">Create Plan</button>
+      <button type="submit" disabled={isCreating}>
+        Create Plan
+      </button>
     </form>
   );
 };
