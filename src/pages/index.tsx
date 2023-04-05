@@ -70,8 +70,8 @@ const Home: NextPage = () => {
 
   const { data, isLoading: plansLoading } = api.plans.getAll.useQuery();
 
-  // Return early if the user is not signed in
-  if (!userLoaded && !plansLoading) return <div />;
+  // Return empty div if user isn't loaded
+  if (!userLoaded) return <div />;
 
   if (plansLoading) return <LoadingScreen />;
 
